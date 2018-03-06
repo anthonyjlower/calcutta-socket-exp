@@ -1,0 +1,24 @@
+{
+  "name": "calcutta_socket_exp",
+  "version": "1.0.0",
+  "description": "The express server to run the auction socket",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/anthonyjlower/calcutta-socket-exp.git"
+  },
+  "author": "Anthony Lower",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anthonyjlower/calcutta-socket-exp/issues"
+  },
+  "homepage": "https://github.com/anthonyjlower/calcutta-socket-exp#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "nodemon": "^1.17.1",
+    "socket.io": "^2.0.4"
+  }
+}
