@@ -11,6 +11,8 @@ let currentTeam = {
 	id: ''
 };
 
+let currentPool = {}
+
 
 module.exports = function(server){
 	const socketServer = io(server);
@@ -35,6 +37,21 @@ module.exports = function(server){
 		socket.on('team up', (teamUp) => {
 			currentTeam = teamUp
 			socketServer.emit('team up', currentTeam)
+		})
+
+		socket.on('selectedPool', (selectedPool) => {
+			currentPool = selectedPool
+			currentBid = {
+				topBidder: "Top Bidder",
+				bidAmount: 0
+			}
+			currentTeam = {
+				name: "Team Name",
+				id: ''
+			}
+			socketServer.emit('user bid', currentBid)
+			socketServer.emit('team up', currentTeam)
+			socketServer.emit('updatedPool', currentPool, currentBid, currentTeam)
 		})
 
 		// Need to find a way to update the state of selectedPool everytime a bid is submitted
