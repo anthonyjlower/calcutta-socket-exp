@@ -1,17 +1,6 @@
 const io = require('socket.io')
 
-
-let currentBid = {
-	topBidder: "Top Bidder",
-	bidAmount: 0
-};
-
-let currentTeam = {
-	name: "Team Name",
-	id: ''
-};
-
-let currentPool = {}
+const pools = {}
 
 
 module.exports = function(server){
@@ -24,39 +13,48 @@ module.exports = function(server){
 			socket.join(poolName);
 			socket.room = poolName;
 
-			// Need a way to only push currentBid and currentTeam to the pool the user is in at scale
-			
-			socketServer.to(poolName).emit('joined', currentBid, currentTeam);
+			// Look through pools{} for a key that matches poolName, if emit that, if one isn't found create it and emit that
+			if (pools[poolName]) {
+				socketServer.to(poolName).emit('joined', pools[poolName].currentBid, pools[poolName].currentTeam);					
+			} else {
+				pools[poolName] = {
+					currentTeam: {
+						name: 'Team Name',
+						id: ''
+					},
+					currentBid: {
+						topBidder: 'Top Bidder',
+						bidAmount: 0
+					}
+				}
+				socketServer.to(poolName).emit('joined', pools[poolName].currentBid, pools[poolName].currentTeam);		
+			}
 		})
 	
 		socket.on('top bid', (topBid) => {
-			currentBid = topBid
-			socketServer.emit('user bid', currentBid)
+			pools[socket.room].currentBid = topBid
+			socketServer.to(socket.room).emit('user bid', pools[socket.room].currentBid)
 		})
 
 		socket.on('team up', (teamUp) => {
-			currentTeam = teamUp
-			socketServer.emit('team up', currentTeam)
+			pools[socket.room].currentTeam = teamUp
+			socketServer.to(socket.room).emit('team up', pools[socket.room].currentTeam)
 		})
 
 		socket.on('selectedPool', (selectedPool) => {
-			currentPool = selectedPool
-			currentBid = {
+			pools[socket.room].currentPool = selectedPool
+			pools[socket.room].currentBid = {
 				topBidder: "Top Bidder",
 				bidAmount: 0
 			}
-			currentTeam = {
+			pools[socket.room].currentTeam = {
 				name: "Team Name",
 				id: ''
 			}
-			socketServer.emit('user bid', currentBid)
-			socketServer.emit('team up', currentTeam)
-			socketServer.emit('updatedPool', currentPool, currentBid, currentTeam)
+			socketServer.emit('user bid', pools[socket.room].currentBid)
+			socketServer.emit('team up', pools[socket.room].currentTeam)
+			socketServer.emit('updatedPool', pools[socket.room].currentPool)
 		})
-
-		// Need to find a way to update the state of selectedPool everytime a bid is submitted
-
-
 
 	})
 }
