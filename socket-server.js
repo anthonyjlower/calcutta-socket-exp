@@ -13,7 +13,6 @@ module.exports = function(server){
 			socket.join(poolName);
 			socket.room = poolName;
 
-			// Look through pools{} for a key that matches poolName, if emit that, if one isn't found create it and emit that
 			if (pools[poolName]) {
 				socketServer.to(poolName).emit('joined', pools[poolName].currentBid, pools[poolName].currentTeam);					
 			} else {
